@@ -45,7 +45,7 @@ import {transferObject} from './stores';
   <div class="draggable model-prop" draggable="true" on:dragstart="{dragstartHandler}" on:dragend="{dragendHandler}" on:drop="{()=>prevent_default()}">
     <p class='draggable-title'>Model</p>
 
-    <select class="form-select form-select-sm model" bind:value={selected} on:change={(e)=> {selected = e.currentTarget.value} }>
+    <select class="form-select form-select-sm model-select" bind:value={selected} on:change={(e)=> {selected = e.currentTarget.value} }>
         {#each dataTypes as dataType}
             <option value={dataType} >{dataType}</option>
         {/each}
@@ -56,7 +56,7 @@ import {transferObject} from './stores';
         <label class="form-check-label" for="{prop + "-switch" }">{prop}</label>
     </div>
     {/each}
-    <input type="hidden" class="model-prop-textinput" placeholder="fieldName" bind:value on:click="{selectAll}" />
+    <input type="hidden" class="model-prop-textinput field-name" placeholder="fieldName" bind:value on:click="{selectAll}" />
     <input type="hidden" class="model-prop-textinput" placeholder="size" bind:value={size} on:click="{selectAll}" />
   </div>
   
@@ -79,12 +79,27 @@ import {transferObject} from './stores';
             border: none;
         }
 
+        .draggable-title {
+            grid-column: 1 / span 2;
+        }
+
+        .model-select {
+            grid-column: 3 / span 2;
+        }
+
+        .field-name {
+            grid-column: 1 / span 2;
+            grid-row: 1 / 1;
+        }
+
         .model-prop {
             padding: 0.5rem;
             box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
             font-size: x-small;
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            font-size: x-small;
         }
 
         .model-prop select {

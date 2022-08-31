@@ -49,7 +49,13 @@ import { transferObject } from './stores';
 
 <style>
   .stored-model-prop {
-
+    /* display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: auto;
+    grid-template-areas: 
+      "header header header header"
+      "switches switches switches switches"
+      "text text" */
   }
 
   
