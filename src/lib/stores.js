@@ -1,5 +1,6 @@
 import { writable, readable } from "svelte/store";
 import Resource from "./Resource";
+import ControllerActions from "./ControllerActions";
 
 export const transferObject = writable({});
 
@@ -16,10 +17,10 @@ export const DRAGGABLE_CONFIG = readable( {
     'controllerActions': {
         'propertyClass': 'controller-action',
         'idFormat': 'controller-action',
-        'actionName': {'index': 'index', 'store':'store','update':'update','delete':'delete'},
-        'freeInputProperties': {
+        'actionName': ControllerActions,
+        'statements': {
             'index': ['render'],
-            'store': ['validate','save','send','flash','redirect'],
+            'store': ['render','validate','save','send','flash','redirect'],
         }
-    }
+    },
 });

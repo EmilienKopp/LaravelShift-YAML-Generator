@@ -12,9 +12,9 @@ function dragendHandler(event) {
     event.currentTarget.classList.add('dragged');
 }
 
-const ACTION_NAME = $DRAGGABLE_CONFIG.controllerActions.actionName.store;
+const ACTION_NAME = 'store';
 const propertyClass = $DRAGGABLE_CONFIG.controllerActions.propertyClass;
-const freeInputProperties = $DRAGGABLE_CONFIG.controllerActions.freeInputProperties;
+const statements = $DRAGGABLE_CONFIG.controllerActions.statements;
 const UUID = nanoid(6).replace('-','X');
 const queryTypes = [
     'all',
@@ -28,13 +28,12 @@ let selected;
 
 </script>
 
-<div class="draggable {propertyClass}" draggable="true" on:dragstart="{dragstartHandler}" on:dragend="{dragendHandler}" on:drop="{()=>prevent_default()}">
+<div class="draggable {propertyClass} {ACTION_NAME}" draggable="true" on:dragstart="{dragstartHandler}" on:dragend="{dragendHandler}" on:drop="{()=>prevent_default()}">
     <p class="action-title">{ACTION_NAME}()</p>
-    <input type="hidden" value="{ACTION_NAME}" />
-    <label for="{ACTION_NAME}-query-select-{UUID}">query:</label>
-    {#each freeInputProperties[ACTION_NAME] as property}
-        <label for="{ACTION_NAME}-{property}-input-{UUID}">{property}:</label>
-        <input type="text" id="{ACTION_NAME}-{property}-input-{UUID}" class="form-control form-control-sm">
+    {#each statements[ACTION_NAME] as property}
+        <!-- <label for="{ACTION_NAME}-{property}-input-{UUID}">{property}:</label> -->
+        <input type="text" id="{ACTION_NAME}-{property}-input-{UUID}" class="form-control form-control-sm" placeholder="{property}">
+        <input type="text" id="{ACTION_NAME}-{property}-options-{UUID}" class="form-control form-control-sm" placeholder="{property} options">
     {/each}
 </div>
 

@@ -2,9 +2,10 @@
 import { fade } from 'svelte/transition';
 import { cubicInOut } from 'svelte/easing';
 import { resource } from './stores';
+import { getRelativeXY, adjustPosition } from '../tools/dragging';
 
 let modalDisplayed = false;
-let X, Y;
+let coord;
 
 const fading = { duration: 200, easing: cubicInOut}
 
@@ -18,20 +19,12 @@ function toggleStatusModal() {
     }
 }
 
-function getClickXY(event) {
-    let elemX = event.target.getBoundingClientRect().left;
-    let elemY = event.target.getBoundingClientRect().top;
-    X = event.pageX - elemX;
-    Y = event.pageY - elemY;
+function mouseDownHandler(event) {
+    coord = getRelativeXY(event);
 }
 
 function dragendHandler(event) {
-    let mouseEndX = event.clientX;
-    let mouseEndY = event.clientY;
-    let newPositionLeft = mouseEndX - X;
-    let newPositionTop = mouseEndY - Y;
-    event.target.style.left = newPositionLeft +'px';
-    event.target.style.top = newPositionTop + 'px';
+    adjustPosition(event,coord);
 }
 
 </script>
@@ -45,9 +38,16 @@ function dragendHandler(event) {
     <div    class="status-modal"
             transition:fade={ fading } draggable="{modalDisplayed}" 
             on:dragend="{dragendHandler}"
-            on:mousedown="{getClickXY}">
+            on:mousedown="{mouseDownHandler}">
     <h5>StatusModal</h5>
-    {resource}
+    <!-- /* TESTING */ -->
+    <p>{$resource.name}</p>
+    {#each $resource.model.attributes as attribute}
+        <p>Attribute: {JSON.stringify(attribute)}</p>
+    {/each}
+    {#each $resource.controllerActions as action}
+        <p>Action: {JSON.stringify(action)}</p>
+    {/each}
     </div>
 {/if}
 

@@ -64,6 +64,10 @@ import {nanoid} from 'nanoid';
   
   
   <style>
+
+        .model-prop {
+            max-width:500px;
+        }
         .dragging {
             border: dashed 0.2rem;
             border-radius: 2%;
@@ -74,7 +78,7 @@ import {nanoid} from 'nanoid';
         }
 
         .model-select {
-            grid-column: 4 / span 2;
+            grid-column: 4;
         }
 
         .field-name-input {
@@ -83,23 +87,23 @@ import {nanoid} from 'nanoid';
         }
 
         .field-size-input {
-            grid-column: 3 / 4;
+            grid-column: 3;
             grid-row: 1;
-        }
-
-        .switch-wrapper {
-
         }
 
         .model-prop {
             padding: 0.5rem;
             display: grid;
-            grid-template-columns: repeat(5, 90px);
-            grid-template-rows: auto;
+            grid-template-columns: repeat(4, 90px);
+            grid-template-rows: 1fr 1fr 1fr;
         }
 
         .model-prop select {
             margin-right: 0.5rem;
+        }
+
+        .form-check-label {
+            text-align: left;
         }
 
 

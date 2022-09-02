@@ -15,8 +15,10 @@ export default class Resource {
     }
     
     updateFrom(element, config) {
+        console.log(element.classList);
         element.classList.forEach( (className) => {
             switch (className) {
+              /* Process a Model Attribute Definition */
               case config.models.propertyClass :
                 let nameVal = element.querySelectorAll(`input[id*="${config.models.inputNames.name}"]`)[0].value;
                 let sizeVal = element.querySelectorAll(`input[id*="${config.models.inputNames.size}"]`)[0].value;
@@ -27,14 +29,20 @@ export default class Resource {
                 });
                 this.model.attributes.push( {'name': nameVal, 'size': sizeVal, 'validation': constraints, 'type': typeVal });
               break;
-              case config.controllerActions.propertyClass :
-                let actionName = element.querySelectorAll('input[type="hidden"]')[0].value;
-                console.log(actionName);
-                let options = [];
-                config.controllerActions.freeInputProperties.forEach( (option) => {
-                    let val = element.querySelectorAll(`input[id*=${option}]`)[0].value;
-                    
-                })
+              /* Process the 'store()' controller action */
+              case 'store' :
+                console.log('Analyzing the store() options');
+                let statements = [];
+                config.controllerActions.statements['store'].forEach( (statement) => {
+                    let value = element.querySelectorAll(`input[id*="${statement}-input"]`)[0].value;
+                    if(!value) return;
+                    let options = element.querySelectorAll(`input[id*="${statement}-option"]`)[0].value;
+                    statements.push({ name: statement, value: value, options: options});
+                });
+                this.controllerActions.push({
+                    'action': 'store',
+                    'statements': statements,
+                });
               break;
             }
           });
@@ -59,7 +67,4 @@ export default class Resource {
     setCustomRequest(r) {
         this.customRequest = r;
     }
-
-
-
 }
