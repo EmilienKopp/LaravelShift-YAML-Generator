@@ -1,22 +1,38 @@
 <script>
-import DraggableText from './lib/DraggableText.svelte';
+import { resource } from './lib/stores';
 import Receiver from './lib/Receiver.svelte'
 import ModelProp from './lib/ModelProp.svelte';
+import IndexAction from './lib/IndexAction.svelte';
+import StoreAction from './lib/StoreAction.svelte';
+import CurrentStatus from './lib/CurrentStatus.svelte';
+
+export let ModelName = '';
+
+function updateResourceName () {
+  $resource.name = ModelName;
+}
+
 </script>
 
 <main>
   <div class="header">
-    <h1>Laravel Blueprint Generator</h1>
+    <CurrentStatus/>
+    <h1>ShiftGen - Resource: {ModelName}</h1>
   </div>
   
   <div class="content">
     <div class="receivers-wrapper card">
+      <input type="text" class="form-control" id="resource-name-input" placeholder="モデル名を入力" 
+      bind:value="{ModelName}"
+      on:input="{updateResourceName}"/>
       <div class="receivers">
         <Receiver />
       </div>
     </div>
     <div class="draggables">
       <ModelProp/>
+      <IndexAction/>
+      <StoreAction/>
     </div>
 
   </div>
@@ -35,8 +51,6 @@ import ModelProp from './lib/ModelProp.svelte';
 <style>
   .receivers-wrapper {
     overflow:auto;
-    width: fit-content;
-
   }
 
   .read-the-docs {

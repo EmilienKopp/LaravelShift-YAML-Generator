@@ -1,6 +1,6 @@
 <script>
-import { transferObject } from './stores';
-
+import { transferObject, DRAGGABLE_CONFIG, resource } from './stores';
+import {nanoid} from 'nanoid';
 
   function dragoverHandler(event) {
     // console.log(event);\
@@ -21,19 +21,14 @@ import { transferObject } from './stores';
 
     // ignore errors in Editor since the parser doesn't know that the writable{} is an HTML Element object
     // @ts-ignore
-    let inputs = $transferObject.querySelectorAll('.model-prop-textinput')
-    inputs.forEach( (elem) => {
-      elem.type = 'text';
-      elem.classList.add(['stored-input'])
-    });
-    // @ts-ignore
-    if($transferObject.querySelector('.draggable-title')) $transferObject.querySelector('.draggable-title').remove();
-    // @ts-ignore
-    $transferObject.classList.add(['flex-row','stored-model-prop']);
-    // @ts-ignore
     event.target.appendChild($transferObject);
-    inputs[0].focus();
+    // @ts-ignore
+    $resource.updateFrom($transferObject,$DRAGGABLE_CONFIG);
+
+    console.log('Current State of Resource:', $resource);
   }
+
+
 
 </script>
 
@@ -48,26 +43,6 @@ import { transferObject } from './stores';
 
 
 <style>
-  .stored-model-prop {
-    /* display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-template-rows: auto;
-    grid-template-areas: 
-      "header header header header"
-      "switches switches switches switches"
-      "text text" */
-  }
-
-  
-
-  .stored-input-group {
-
-  }
-
-  .stored-checkbox {
-    
-  }
-
   .receiver {
     border: 1px solid black;
     border-radius: 2%;
