@@ -15,9 +15,7 @@ import {nanoid} from 'nanoid';
   }
 
   function dropHandler(event) {
-    console.log('Transfered Object', $transferObject);
     event.target.style = '';
-    console.log(event.currentTarget.classList);
 
     // ignore errors in Editor since the parser doesn't know that the writable{} is an HTML Element object
     // @ts-ignore
