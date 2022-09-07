@@ -1,8 +1,7 @@
-
-
+import { attributePropertiesStore } from "./stores";
 export default class Resource {
-
-    
+    models = [];
+    controllers;
 
     constructor() {
         this.name = '';
@@ -14,21 +13,25 @@ export default class Resource {
         this.customRequest = undefined;
     }
     
-    updateFrom(element, config) {
-        console.log(element.classList);
+    updateFrom(element, config, options) {
+        console.log(element.id, options);
         element.classList.forEach( (className) => {
             switch (className) {
+
               /* Process a Model Attribute Definition */
               case config.models.propertyClass :
+                let constraintsArray = [];
+
                 let nameVal = element.querySelectorAll(`input[id*="${config.models.inputNames.name}"]`)[0].value;
                 let sizeVal = element.querySelectorAll(`input[id*="${config.models.inputNames.size}"]`)[0].value;
                 let typeVal = element.querySelectorAll(`select[id^="${config.models.inputNames.dataType}"]`)[0].value;
-                let constraints = [];
-                element.querySelectorAll('input[role="switch"]').forEach( (element) => {
-                    if(element.checked) constraints.push(element.name);   
+                
+                options.forEach( (constraint) => {
+                    if(constraint.checked) constraintsArray.push(constraint.label);   
                 });
-                this.model.attributes.push( {'name': nameVal, 'size': sizeVal, 'validation': constraints, 'type': typeVal });
+                this.model.attributes.push( {'name': nameVal, 'size': sizeVal, 'validation': constraintsArray, 'type': typeVal });
               break;
+
               /* Process the 'store()' controller action */
               case 'store' :
                 console.log('Analyzing the store() options');

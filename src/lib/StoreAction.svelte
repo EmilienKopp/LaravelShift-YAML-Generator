@@ -1,11 +1,10 @@
 <script>
 import { prevent_default } from 'svelte/internal';
-import {transferObject, DRAGGABLE_CONFIG, resource} from './stores';
+import { DRAGGABLE_CONFIG, resource} from './stores';
 import {nanoid} from 'nanoid';
 
 function dragstartHandler(event) {
     event.currentTarget.classList.add('dragging');
-    $transferObject = event.currentTarget;
 }
 
 function dragendHandler(event) {
