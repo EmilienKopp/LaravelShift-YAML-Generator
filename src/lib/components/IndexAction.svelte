@@ -1,11 +1,11 @@
 <script>
 import { prevent_default } from 'svelte/internal';
-import { DRAGGABLE_CONFIG, resource} from './stores';
+import { CONFIG, resource} from '../stores';
 import {nanoid} from 'nanoid';
 
 const ACTION_NAME = 'index';
-const propertyClass = $DRAGGABLE_CONFIG.controllerActions.propertyClass;
-const statements = $DRAGGABLE_CONFIG.controllerActions.statements;
+const propertyClass = $CONFIG.controllerActions.propertyClass;
+const statements = $CONFIG.controllerActions.statements;
 const UUID = nanoid(6).replace('-','X');
 
 function dragstartHandler(event) {

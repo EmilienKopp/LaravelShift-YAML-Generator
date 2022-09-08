@@ -4,7 +4,11 @@ module.exports = {
   purge:["./src/**/*.{html,js,svelte}"],
   content: ["./src/**/*.{html,js,svelte}"],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        darkish: '#282828',
+      },
+    },
   },
   plugins: [],
 }

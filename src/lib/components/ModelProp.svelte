@@ -1,19 +1,23 @@
 <svelte:options accessors={true}/>
 <script>
-import { DRAGGABLE_CONFIG, toggableProperties, attributePropertiesStore, modelProxies, modelData, resource} from './stores';
+import { CONFIG, attributePropertiesStore, modelProxies, modelData, resource, DATA_TYPES, MODIFIERS} from '../stores';
 import {nanoid} from 'nanoid';
 import PropCheckbox from './PropCheckbox.svelte';
 import { createEventDispatcher } from 'svelte';
 import { fly } from 'svelte/transition';
 import { onDestroy } from 'svelte';
+import Tooltip from './Tooltip.svelte';
+import ModifierInput from './ModifierInput.svelte';
+import { makeUUID } from '../tools/toolbox';
     
     export let UUID = nanoid(6).replace('-','X');
     export let name = null;
     export let type = null;
     export let modifiers = [];
     export let size = null;
-    export let received = false;
-    
+    export let extraModifiers = [];
+    export let saved = false;
+
     const dispatch = createEventDispatcher();
 
     let selectElement;
@@ -73,55 +77,54 @@ import { onDestroy } from 'svelte';
         console.log('modifiers', modifiers);
     }
 
-    const idBase = $DRAGGABLE_CONFIG.models.idFormat;
-    const propertyClass = $DRAGGABLE_CONFIG.models.propertyClass
-    const nameInput = $DRAGGABLE_CONFIG.models.inputNames.name;
-    const sizeInput = $DRAGGABLE_CONFIG.models.inputNames.size;
-    const dataTypeInput = $DRAGGABLE_CONFIG.models.inputNames.dataType;
-    const dataTypes = [
-        'int',
-        'string',
-        'text'
-    ];
+    function showMoreProps() {
+        let newUUID = UUID+'_'+makeUUID();
+        extraModifiers = [...extraModifiers, newUUID];
+        console.log(extraModifiers);
+    }
 
-    const properties = $toggableProperties; 
+    const idBase = $CONFIG.models.idFormat;
+    const propertyClass = $CONFIG.models.propertyClass
+    const nameInput = $CONFIG.models.inputNames.name;
+    const sizeInput = $CONFIG.models.inputNames.size;
+    const dataTypeInput = $CONFIG.models.inputNames.dataType;
+    const commonModifiers = $MODIFIERS.filter( m => m.common === true); 
 
-    let dragging;
-    console.log(properties);
+    let savedClass = "border-2 border-green-500 grid-cols-6";
+    let unsavedClass = "grid-cols-5";
   </script>
   
-  <div id="{UUID}"
-    class="{dragging ? 'dragging' : ''} {propertyClass} p-2 bg-orange-100 shadow-orange-100 w-full shadow-md grid grid-cols-6 grid-rows-2 gap-2" 
-    draggable="true"
-    transition:fly={ {duration: 500, x: 500} }>
 
-    {#if !received}
-    <button on:click={add}
-            class="row-span-2 col-span-1 bg-orange-200 text-orange-800 font-bold text-3xl rounded-lg shadow-sm" >
-        <i class="bi bi-box-arrow-in-left"></i>
-    </button>
-    {:else}
-    <button on:click={remove}
-            class="row-span-2 col-span-1 bg-orange-200 text-orange-800 font-bold text-3xl rounded-lg shadow-sm" >
-        <i class="bi bi-trash-fill"></i>
-    </button>
-    {/if}
-    
+  <div id="{UUID}"
+    class="{propertyClass} my-2 p-2 { saved ? savedClass : unsavedClass} bg-slate-900 text-darkish border-darkish border-2 rounded-md w-full grid gap-2" 
+    draggable="true"
+    transition:fly={ {duration: 500, x: -500} }>
+
     <input id="{nameInput+"-"+UUID}" type="text" 
-        class="{idBase}-textinput field-name-input col-span-2" size="16" placeholder="fieldName" bind:value={name} />
-    <select id="{dataTypeInput+"-"+UUID}" class="form-select form-select-sm model-select col-span-2 border-1" 
+        class="{idBase}-textinput field-name-input col-span-2 rounded-sm p-1" size="16" placeholder="fieldName" bind:value={name} />
+    <select id="{dataTypeInput+"-"+UUID}" class="col-span-2 border-1 text-sm" 
             bind:value={type}
             bind:this={selectElement}>
 
-        {#each dataTypes as dataType}
-            <option value={dataType} >{dataType}</option>
+        {#each $DATA_TYPES as dataType}
+            <option value={dataType.type} >{dataType.type}</option>
         {/each}
 
     </select>
 
-    <input id="{sizeInput+"-"+UUID}" type="text" class="{idBase}-textinput field-size-input" placeholder="size" bind:value={size} />
+    <input id="{sizeInput+"-"+UUID}" type="text" class="{idBase}-textinput rounded-sm p-1" placeholder="size" bind:value={size} />
 
-    {#each properties as prop}
+    
+    {#if saved}
+    <div class="relative font-bold text-xl text-green-600">
+        <i class="bi bi-check-circle-fill absolute -top-6 -right-5"></i>
+    </div>
+    {/if}
+    
+
+
+    
+    {#each commonModifiers as prop}
     <div class="flex flex-col justify-center" id={"check-group-" + prop.label + '-' + UUID} >
 
         <PropCheckbox {UUID}
@@ -129,16 +132,34 @@ import { onDestroy } from 'svelte';
             label={prop.label}
             checked={ (modifiers.find(c => c.label === prop.label) !== undefined) }
             icon={prop.icon}/>
-        <!-- <input class="form-check-input" type="checkbox" role="switch" id="{prop + "-switch-" + UUID }" name="{prop}"/>
-        <label class="form-check-label text-xs" for="{prop + "-switch-" + UUID }">{prop}</label> -->
     </div>
     {/each}
 
+    {#if saved}
+    <div>
+        <button class="menu-icon bg-orange-500 m-0 text-darkish"><i class="bi bi-trash"></i></button>
+    </div>
+    {/if}
+
+
+    <div class="col-span-full">
+        <div class="flex flex-row">
+            <Tooltip label="追加" >
+                <button on:click={showMoreProps} 
+                    class="w-8 rounded-full mr-4"><i class="bi bi-menu-app-fill"></i> </button>
+            </Tooltip>
+            <span class="text-white">他のプロパティを追加</span>
+        </div>
+    </div>
+
+    
+    {#if extraModifiers.length > 0 }
+    <div id="extra-modifiers" class="relative">
+        {#each extraModifiers as uuid}
+            <ModifierInput UUID={uuid} />
+        {/each}
+    </div>
+    {/if}
+
+    
 </div>
-
-
-
-  
-  <style>
-
-  </style>
