@@ -91,7 +91,7 @@ import { makeUUID } from '../tools/toolbox';
     const commonModifiers = $MODIFIERS.filter( m => m.common === true); 
 
     let savedClass = "border-2 border-green-500 grid-cols-6";
-    let unsavedClass = "grid-cols-5";
+    let unsavedClass = "grid-cols-6";
   </script>
   
 
@@ -123,7 +123,7 @@ import { makeUUID } from '../tools/toolbox';
     
 
 
-    
+    <div class="col-span-5 col-start-1 grid grid-cols-5">
     {#each commonModifiers as prop}
     <div class="flex flex-col justify-center" id={"check-group-" + prop.label + '-' + UUID} >
 
@@ -134,10 +134,11 @@ import { makeUUID } from '../tools/toolbox';
             icon={prop.icon}/>
     </div>
     {/each}
+    </div>
 
     {#if saved}
-    <div>
-        <button class="menu-icon bg-orange-500 m-0 text-darkish"><i class="bi bi-trash"></i></button>
+    <div class="h-4 w-4">
+        <button class="menu-icon hover:bg-red-500 bg-orange-500 m-0 text-darkish"><i class="bi bi-trash"></i></button>
     </div>
     {/if}
 
