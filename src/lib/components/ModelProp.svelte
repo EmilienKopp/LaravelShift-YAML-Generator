@@ -15,12 +15,24 @@ import { makeUUID } from '../tools/toolbox';
     export let type = null;
     export let modifiers = [];
     export let size = null;
+    export let precisions = null;
+    export let scale = null;
     export let extraModifiers = [];
     export let saved = false;
 
     const dispatch = createEventDispatcher();
+    const idBase = $CONFIG.models.idFormat;
+    const propertyClass = $CONFIG.models.propertyClass
+    const nameInput = $CONFIG.models.inputNames.name;
+    const sizeInput = $CONFIG.models.inputNames.size;
+    const dataTypeInput = $CONFIG.models.inputNames.dataType;
+    const commonModifiers = $MODIFIERS.filter( m => m.common === true); 
 
+
+    let savedClass = "border-2 border-green-500 grid-cols-7";
+    let unsavedClass = "grid-cols-7";
     let selectElement;
+    let disabled = true;
 
     onDestroy(
         () => {
@@ -82,28 +94,27 @@ import { makeUUID } from '../tools/toolbox';
         extraModifiers = [...extraModifiers, newUUID];
         console.log(extraModifiers);
     }
-
-    const idBase = $CONFIG.models.idFormat;
-    const propertyClass = $CONFIG.models.propertyClass
-    const nameInput = $CONFIG.models.inputNames.name;
-    const sizeInput = $CONFIG.models.inputNames.size;
-    const dataTypeInput = $CONFIG.models.inputNames.dataType;
-    const commonModifiers = $MODIFIERS.filter( m => m.common === true); 
-
-    let savedClass = "border-2 border-green-500 grid-cols-6";
-    let unsavedClass = "grid-cols-6";
   </script>
-  
 
+
+    {#if saved}
+    <div class="relative top-4 -left-3 -mt-7 font-bold text-xl text-green-600">
+        <i class="bi bi-check-circle-fill"></i>
+    </div>
+    {/if}
   <div id="{UUID}"
-    class="{propertyClass} my-2 p-2 { saved ? savedClass : unsavedClass} bg-slate-900 text-darkish border-darkish border-2 rounded-md w-full grid gap-2" 
+    class="{propertyClass} mb-3 p-2 { saved ? savedClass : unsavedClass} bg-slate-900 text-darkish border-darkish border-2 rounded-md w-full grid gap-2" 
     draggable="true"
     transition:fly={ {duration: 500, x: -500} }>
 
+    <!-- NAME & TYPE -->
     <input id="{nameInput+"-"+UUID}" type="text" 
         class="{idBase}-textinput field-name-input col-span-2 rounded-sm p-1" size="16" placeholder="fieldName" bind:value={name} />
+    
+    
     <select id="{dataTypeInput+"-"+UUID}" class="col-span-2 border-1 text-sm" 
             bind:value={type}
+            on:change={ () => { disabled = $DATA_TYPES.find(dt => dt.type == type).parameters == undefined }}
             bind:this={selectElement}>
 
         {#each $DATA_TYPES as dataType}
@@ -112,55 +123,50 @@ import { makeUUID } from '../tools/toolbox';
 
     </select>
 
-    <input id="{sizeInput+"-"+UUID}" type="text" class="{idBase}-textinput rounded-sm p-1" placeholder="size" bind:value={size} />
-
-    
-    {#if saved}
-    <div class="relative font-bold text-xl text-green-600">
-        <i class="bi bi-check-circle-fill absolute -top-6 -right-5"></i>
-    </div>
-    {/if}
-    
-
-
-    <div class="col-span-5 col-start-1 grid grid-cols-5">
-    {#each commonModifiers as prop}
-    <div class="flex flex-col justify-center" id={"check-group-" + prop.label + '-' + UUID} >
-
-        <PropCheckbox {UUID}
-            on:togglecheck={ toggleOptionHandler }
-            label={prop.label}
-            checked={ (modifiers.find(c => c.label === prop.label) !== undefined) }
-            icon={prop.icon}/>
-    </div>
-    {/each}
-    </div>
-
-    {#if saved}
-    <div class="h-4 w-4">
-        <button class="menu-icon hover:bg-red-500 bg-orange-500 m-0 text-darkish"><i class="bi bi-trash"></i></button>
-    </div>
-    {/if}
-
-
-    <div class="col-span-full">
-        <div class="flex flex-row">
-            <Tooltip label="追加" >
-                <button on:click={showMoreProps} 
-                    class="w-8 rounded-full mr-4"><i class="bi bi-menu-app-fill"></i> </button>
-            </Tooltip>
-            <span class="text-white">他のプロパティを追加</span>
-        </div>
-    </div>
-
-    
-    {#if extraModifiers.length > 0 }
-    <div id="extra-modifiers" class="relative">
-        {#each extraModifiers as uuid}
-            <ModifierInput UUID={uuid} />
+    <!-- SIZE (if relevant) -->
+    {#if type  && $DATA_TYPES.find(dt => dt.type == type).parameters !== undefined } 
+        {#each $DATA_TYPES.find(dt => dt.type == type).parameters as parameter}
+            <input id="{sizeInput+"-"+UUID}" type="text" size="4"
+            class="{idBase}-textinput rounded-sm p-1 text-xs" placeholder="{parameter.name}"
+            {disabled}
+            bind:value={size} />
         {/each}
-    </div>
     {/if}
 
+    <!-- COMMON MODIFIERS (nullable, unique, ...) -->
+    <div class="col-span-7 col-start-1 grid grid-cols-7">
+        {#each commonModifiers as prop}
+        <PropCheckbox {UUID}
+                on:togglecheck={ toggleOptionHandler }
+                label={prop.label}
+                checked={ (modifiers.find(c => c.label === prop.label) !== undefined) }
+                icon={prop.icon}/>
+        {/each}
+        <Tooltip label="外す">
+            <button on:click={remove}
+                    class="menu-icon h-6 w-6 text-sm hover:bg-orange-500 bg-yellow-500 m-0 text-darkish"><i class="bi bi-x"></i></button>
+        </Tooltip>
+        <!-- DELETE BUTTON -->
+        <Tooltip label="削除">
+            <button on:click={remove}
+                    class="menu-icon h-6 w-6 text-sm hover:bg-red-500 bg-orange-500 m-0 text-darkish"><i class="bi bi-trash"></i></button>
+        </Tooltip>
+    </div>
+
     
+    <div class="col-span-7 col-start-1 grid grid-cols-7">
+        <!-- ADD NEW MODIFIER BUTTON -->
+        <Tooltip label="追加" >
+            <button on:click={showMoreProps} 
+                class="menu-icon h-6 w-6"><i class="bi bi-plus text-lg"></i> </button>
+        </Tooltip>
+
+        {#if extraModifiers.length > 0 }
+        <div id="extra-modifiers" class="relative">
+            {#each extraModifiers as uuid}
+                <ModifierInput UUID={uuid} />
+            {/each}
+        </div>
+        {/if}
+    </div>
 </div>

@@ -26,7 +26,7 @@
         event.currentTarget.classList.remove( checked ? checkedHoverClass : uncheckedHoverClass );
     }
 </script>
-{#if !disabled}
+
     <Tooltip label="{label}">
         <button id={label+'-'+UUID} 
         class="{baseStyle} {checked ? checkedClass : uncheckedClass }"
@@ -35,13 +35,3 @@
             <i class="bi bi-{icon}"></i>
         </button>
     </Tooltip>
-
-{:else}
-<div>
-    <button id={label+'-'+UUID} 
-                    title="{label}"
-                    class="{baseStyle} {checked ? checkedClass : uncheckedClass }">
-                    <i class="bi bi-{icon}"></i>
-    </button>
-</div>
-{/if}

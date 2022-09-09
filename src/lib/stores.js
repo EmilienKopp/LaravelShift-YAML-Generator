@@ -14,14 +14,6 @@ export const YAML = writable();
 
 export const attributePropertiesStore = writable([]);
 
-export const toggableProperties = writable([
-    {label: 'nullable', checked: false, icon: 'reception-0'},
-    {label: 'unique', checked: false, icon: 'slash-circle'},
-    {label: 'required', checked: false, icon: 'exclamation-circle'},
-    {label: 'password', checked: false, icon: 'lock'},
-    {label: 'url', checked: false, icon: 'link'}
-]);
-
 export const CONFIG = readable( {
     'models': {
         'propertyClass': 'model-prop',
@@ -110,7 +102,7 @@ export const DATA_TYPES = writable([
 
 export const MODIFIERS = writable([
     {label:'nullable', checked: false, icon: 'reception-0', common: true},
-    {label:'unique', checked: false, icon: 'slash-circle', common: true},
+    {label:'unique', checked: false, icon: 'dice-1', common: true},
     {label:'required', checked: false, icon: 'exclamation-circle', common: true},
     {label:'password', checked: false, icon: 'lock', common: true},
     {label:'url', checked: false, icon: 'link', common: true},

@@ -12,12 +12,13 @@ export let ModelName = '';
 
 let columnUUID, columnName, columnType, columnSize, columnModifiers;
 let saved = false;
-let latest;
+let first;
+let currentIndex = 0;
 
 onMount( () => {
   modelData.set({ [ModelName]: {} });
   YAML.set(dump($modelData));
-
+  $modelProxies.push(first)
 
 })
 
@@ -42,7 +43,7 @@ function saveMenuWidth (event) {
 
 // clone the modelProp component and add it to the receiver below
 function appendNew() {
-  latest.saved = true;
+  
   let clone = new ModelProp({
     props: {
       UUID: columnUUID,
@@ -50,30 +51,39 @@ function appendNew() {
       type: null,
       size: null,
       modifiers: [],
-      saved: false,
     },
     target: document.querySelector('#list'),
     intro: true,
   });
-  clone.$on('remove', () => {
-    console.warn('remove event received by cloned ModelProp');
-    clone.$destroy();
-  });
-  clone.$on('destroyed', () => {
-    console.warn('data destroyed');
-    updateResource();
-  });
+
   /** add the clone to an array for backup **/
   modelProxies.set([...$modelProxies, clone]);
   console.log(clone.UUID,'added to', $modelProxies);
+  $modelProxies[currentIndex].saved = true;
+  $modelProxies.forEach( component => {
+    component.$on('remove', () => {
+      console.warn('remove event received by cloned ModelProp');
+      $modelProxies[$modelProxies.length-2].$destroy();
+    });
+    component.$on('destroyed', () => {
+      console.warn('data destroyed');
+      updateResource();
+    });
+  })
+  currentIndex++;
+
   updateResource();
+
   let modifiersString = columnModifiers.map(c => c.label).join(' ');
   console.log('modifiersString: ', modifiersString);
-
   let typeSize = columnType + (columnSize ? `:${columnSize}` : '');
   $modelData[ModelName] = {...$modelData[ModelName], [columnName] : `${typeSize} ${modifiersString}`};
   YAML.set(dump($modelData));
   console.log('yaml:',$YAML);
+}
+
+function remove() {
+
 }
 
 </script>
@@ -113,7 +123,9 @@ function appendNew() {
             <h6>Model:</h6>
             <div id="attributes" class="h-full w-96">
               <div id="list" class="px-1">
-                <ModelProp bind:this={latest} bind:name={columnName} bind:type={columnType} bind:size={columnSize} bind:modifiers={columnModifiers} {saved}/>
+                <ModelProp on:remove(remove)
+                bind:this={first} bind:name={columnName} bind:type={columnType} 
+                bind:size={columnSize} bind:modifiers={columnModifiers} {saved}/>
               </div>
               <div on:click={appendNew} 
               class=" h-8 mx-1 mt-2 border-2 rounded-md border-darkish text-center hover:bg-darkish hover:shadow-sm hover:shadow-darkish">

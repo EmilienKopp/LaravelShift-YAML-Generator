@@ -26,11 +26,16 @@ function chaining () {
     let chainOptions = selected.chain;
     let selectInput = clone.querySelector('select');
     let inputElement = clone.querySelector('input');
+    while (selectInput.firstChild) {
+        selectInput.removeChild(selectInput.firstChild);
+    }
     chainOptions.forEach(option => {
         let optionElement = document.createElement('option');
         optionElement.value = option;
-        option.innerText = option;
+        optionElement.innerText = option;
+        selectInput.appendChild(optionElement);
     });
+    selectInput.parentNode.appendChild(inputElement);
     document.querySelector('#'+UUID).parentNode.appendChild(clone);
 }
 
@@ -54,6 +59,7 @@ function chaining () {
             </select>
         {/if}
     </div>
+
 </div>
 
 
