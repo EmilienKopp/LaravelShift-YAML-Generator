@@ -1,24 +1,26 @@
 <svelte:options accessors={true}/>
 <script>
-import { CONFIG, attributePropertiesStore, modelProxies, modelData, resource, DATA_TYPES, MODIFIERS} from '../stores';
+import { CONFIG, attributePropertiesStore, columns, modelData, resource, DATA_TYPES, MODIFIERS} from '../stores';
 import {nanoid} from 'nanoid';
 import PropCheckbox from './PropCheckbox.svelte';
 import { createEventDispatcher } from 'svelte';
 import { fly } from 'svelte/transition';
-import { onDestroy } from 'svelte';
+import { onMount, onDestroy } from 'svelte';
 import Tooltip from './Tooltip.svelte';
 import ModifierInput from './ModifierInput.svelte';
 import { makeUUID } from '../tools/toolbox';
     
-    export let UUID = nanoid(6).replace('-','X');
+    export let UUID = null;
     export let name = null;
     export let type = null;
     export let modifiers = [];
     export let size = null;
-    export let precisions = null;
+    export let precision = null;
     export let scale = null;
     export let extraModifiers = [];
     export let saved = false;
+
+    let refs = [];
 
     const dispatch = createEventDispatcher();
     const idBase = $CONFIG.models.idFormat;
@@ -32,24 +34,46 @@ import { makeUUID } from '../tools/toolbox';
     let savedClass = "border-2 border-green-500 grid-cols-7";
     let unsavedClass = "grid-cols-7";
     let selectElement;
-    let disabled = true;
+
+
+    onMount( () => {
+        UUID = nanoid(6).replace('-','X');
+    });
 
     onDestroy(
         () => {
             console.log('destroyed: ', UUID);
-            modelProxies.update( proxies => proxies.filter( proxy => proxy.UUID !== UUID));
+            $columns =  $columns.filter( c => c.UUID !== UUID);
             delete $modelData[$resource.name][name];
             console.log($modelData);
-            if($modelProxies.length <= 1) {
-                modelProxies.update( proxies => []);
+            if($columns.length <= 1) {
+                columns.update( proxies => []);
                 console.log('all proxies destroyed');
             }
-            console.log('modelFields: ', $modelProxies);
+            console.log('modelFields: ', $columns);
             dispatch('destroyed', {UUID});
         }
     );
 
-
+    function updateSelf() {
+        console.log(refs);
+        refs.forEach( ref => {
+            switch (ref.name) {
+                case 'precision':
+                    precision = ref.value;
+                    break;
+                case 'scale':
+                    scale = ref.value;
+                    break;
+                case 'size':
+                    size = ref.value;
+                    break;
+                default:
+                    break;
+            }
+        });
+        console.log(`precision: ${precision}, scale: ${scale}, size: ${size}`);
+    }
 
     function add () {
         // Check if the type is null and prevent the event dispatch if it is
@@ -109,12 +133,11 @@ import { makeUUID } from '../tools/toolbox';
 
     <!-- NAME & TYPE -->
     <input id="{nameInput+"-"+UUID}" type="text" 
-        class="{idBase}-textinput field-name-input col-span-2 rounded-sm p-1" size="16" placeholder="fieldName" bind:value={name} />
+        class=" field-name-input col-span-2 rounded-sm p-1" size="16" placeholder="fieldName" bind:value={name} />
     
     
     <select id="{dataTypeInput+"-"+UUID}" class="col-span-2 border-1 text-sm" 
             bind:value={type}
-            on:change={ () => { disabled = $DATA_TYPES.find(dt => dt.type == type).parameters == undefined }}
             bind:this={selectElement}>
 
         {#each $DATA_TYPES as dataType}
@@ -125,11 +148,10 @@ import { makeUUID } from '../tools/toolbox';
 
     <!-- SIZE (if relevant) -->
     {#if type  && $DATA_TYPES.find(dt => dt.type == type).parameters !== undefined } 
-        {#each $DATA_TYPES.find(dt => dt.type == type).parameters as parameter}
-            <input id="{sizeInput+"-"+UUID}" type="text" size="4"
-            class="{idBase}-textinput rounded-sm p-1 text-xs" placeholder="{parameter.name}"
-            {disabled}
-            bind:value={size} />
+        {#each $DATA_TYPES.find(dt => dt.type == type).parameters as parameter, index}
+            <input type="text" size="4" name="{parameter.name}"
+            class=" rounded-sm p-1 text-xs" placeholder="{parameter.name}"
+            bind:this={refs[index]} on:change={updateSelf}/>
         {/each}
     {/if}
 
@@ -142,10 +164,7 @@ import { makeUUID } from '../tools/toolbox';
                 checked={ (modifiers.find(c => c.label === prop.label) !== undefined) }
                 icon={prop.icon}/>
         {/each}
-        <Tooltip label="外す">
-            <button on:click={remove}
-                    class="menu-icon h-6 w-6 text-sm hover:bg-orange-500 bg-yellow-500 m-0 text-darkish"><i class="bi bi-x"></i></button>
-        </Tooltip>
+        
         <!-- DELETE BUTTON -->
         <Tooltip label="削除">
             <button on:click={remove}
@@ -155,18 +174,21 @@ import { makeUUID } from '../tools/toolbox';
 
     
     <div class="col-span-7 col-start-1 grid grid-cols-7">
-        <!-- ADD NEW MODIFIER BUTTON -->
-        <Tooltip label="追加" >
-            <button on:click={showMoreProps} 
-                class="menu-icon h-6 w-6"><i class="bi bi-plus text-lg"></i> </button>
-        </Tooltip>
-
         {#if extraModifiers.length > 0 }
-        <div id="extra-modifiers" class="relative">
+        <div id="extra-modifiers" class="col-span-6 grid grid-cols-7">
             {#each extraModifiers as uuid}
-                <ModifierInput UUID={uuid} />
+            <div class="col-start-1 items-center">
+                <Tooltip label="外す">
+                    <button on:click={() => { extraModifiers = extraModifiers.filter( m => m !== uuid) } }
+                            class="menu-icon h-6 w-6 text-sm hover:bg-orange-500 bg-yellow-500 m-0 text-darkish"><i class="bi bi-x"></i></button>
+                </Tooltip>
+            </div>
+            <ModifierInput UUID={uuid} />
             {/each}
         </div>
         {/if}
+        <!-- ADD NEW MODIFIER BUTTON -->
+        <button on:click={showMoreProps} 
+            class="menu-icon h-6 w-6 col-start-7 place-self-end"><i class="bi bi-plus text-lg"></i> </button>
     </div>
 </div>

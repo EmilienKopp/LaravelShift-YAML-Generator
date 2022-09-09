@@ -4,7 +4,7 @@ import ControllerActions from "./ControllerActions.js";
 
 export const modelData = writable({});
 
-export const modelProxies = writable([]);
+export const columns = writable([]);
 
 export const menuRightmost = writable();
 

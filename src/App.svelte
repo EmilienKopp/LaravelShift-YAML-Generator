@@ -1,12 +1,13 @@
 <script>
-import { resource, menuRightmost, modelProxies, YAML, modelData } from './lib/stores';
-import ModelProp from './lib/components/ModelProp.svelte';
+import { resource, menuRightmost, columns, YAML, modelData } from './lib/stores';
+import ColumnInfo from './lib/components/ColumnInfo.svelte';
 import IndexAction from './lib/components/IndexAction.svelte';
 import YamlTool from './lib/components/YamlTool.svelte';
 import StoreAction from './lib/components/StoreAction.svelte';
 import { dump } from 'js-yaml';
 import { onMount } from 'svelte';
 import { afterUpdate } from 'svelte';
+import { makeUUID } from './lib/tools/toolbox';
 
 export let ModelName = '';
 
@@ -18,8 +19,6 @@ let currentIndex = 0;
 onMount( () => {
   modelData.set({ [ModelName]: {} });
   YAML.set(dump($modelData));
-  $modelProxies.push(first)
-
 })
 
 afterUpdate( () => {
@@ -43,47 +42,65 @@ function saveMenuWidth (event) {
 
 // clone the modelProp component and add it to the receiver below
 function appendNew() {
-  
-  let clone = new ModelProp({
-    props: {
-      UUID: columnUUID,
-      name: null,
-      type: null,
-      size: null,
-      modifiers: [],
-    },
-    target: document.querySelector('#list'),
-    intro: true,
-  });
 
-  /** add the clone to an array for backup **/
-  modelProxies.set([...$modelProxies, clone]);
-  console.log(clone.UUID,'added to', $modelProxies);
-  $modelProxies[currentIndex].saved = true;
-  $modelProxies.forEach( component => {
-    component.$on('remove', () => {
-      console.warn('remove event received by cloned ModelProp');
-      $modelProxies[$modelProxies.length-2].$destroy();
-    });
-    component.$on('destroyed', () => {
-      console.warn('data destroyed');
-      updateResource();
-    });
-  })
-  currentIndex++;
+  //TODO: Fix the bug where the new component is not added to the modelData
+  // let clone = new ModelProp({
+  //   props: {
+  //     UUID: columnUUID,
+  //     name: null,
+  //     type: null,
+  //     size: null,
+  //     modifiers: [],
+  //   },
+  //   target: document.querySelector('#list'),
+  //   intro: true,
+  // });
 
+  // /** add the clone to an array for backup **/
+  // modelProxies.set([...$modelProxies, clone]);
+  // console.log(clone.UUID,'added to', $modelProxies);
+  // $modelProxies[currentIndex].saved = true;
+  // $modelProxies.forEach( component => {
+  //   component.$on('remove', () => {
+  //     console.warn('remove event received by cloned ModelProp');
+  //     $modelProxies[currentIndex].$destroy();
+  //     $modelProxies = $modelProxies.filter( c => c.UUID !== component.UUID);
+  //   });
+  //   component.$on('destroyed', () => {
+  //     console.warn('data destroyed');
+  //     updateResource();
+  //   });
+  // })
+  // currentIndex++;
+
+  // updateResource();
+
+  // let modifiersString = columnModifiers.map(c => c.label).join(' ');
+  // console.log('modifiersString: ', modifiersString);
+  // let typeSize = columnType + (columnSize ? `:${columnSize}` : '');
+  // $modelData[ModelName] = {...$modelData[ModelName], [columnName] : `${typeSize} ${modifiersString}`};
+  // YAML.set(dump($modelData));
+  // console.log('yaml:',$YAML);
+}
+
+function addColumn(){
+  let newUUID = makeUUID();
+  $columns = [...$columns, {
+    UUID: newUUID,
+    name: null,
+    type: null,
+    size: null,
+    precision: null,
+    scale: null,
+    modifiers: [],
+    saved: false,
+  }];
+  console.log($columns);
   updateResource();
-
-  let modifiersString = columnModifiers.map(c => c.label).join(' ');
-  console.log('modifiersString: ', modifiersString);
-  let typeSize = columnType + (columnSize ? `:${columnSize}` : '');
-  $modelData[ModelName] = {...$modelData[ModelName], [columnName] : `${typeSize} ${modifiersString}`};
-  YAML.set(dump($modelData));
-  console.log('yaml:',$YAML);
 }
 
 function remove() {
-
+  $columns = $columns.filter( c => c !== columnUUID);
 }
 
 </script>
@@ -123,11 +140,13 @@ function remove() {
             <h6>Model:</h6>
             <div id="attributes" class="h-full w-96">
               <div id="list" class="px-1">
-                <ModelProp on:remove(remove)
-                bind:this={first} bind:name={columnName} bind:type={columnType} 
-                bind:size={columnSize} bind:modifiers={columnModifiers} {saved}/>
+                {#each $columns as column}
+                <ColumnInfo on:remove(remove) {...column} bind:name={column.name} bind:type={column.type} bind:size={column.size}
+                            bind:precision={column.precision} bind:scale={column.scale} bind:modifiers={column.modifiers}
+                            bind:saved={column.saved} />
+                {/each}
               </div>
-              <div on:click={appendNew} 
+              <div on:click={addColumn} 
               class=" h-8 mx-1 mt-2 border-2 rounded-md border-darkish text-center hover:bg-darkish hover:shadow-sm hover:shadow-darkish">
                 <i class="bi bi-plus-square-dotted text-xl">
               </div>
