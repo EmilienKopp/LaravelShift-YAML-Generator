@@ -1,17 +1,17 @@
 <script>
 import { createEventDispatcher } from "svelte";
-import Tooltip from "./Tooltip.svelte";
 import { MODIFIERS} from '../stores';
-import { claim_svg_element } from "svelte/internal";
 import { fade } from 'svelte/transition';
 import { cubicIn } from 'svelte/easing';
-import { makeUUID } from "../tools/toolbox";
 
 
-export let UUID;
 
-let selected = {};
-let div;
+export let modifierID;
+export let selected;
+export let value;
+export let option;
+
+let selectedMod;
 
 const dispatch = createEventDispatcher();
 const modifiers = $MODIFIERS.filter(m => !m.common);
@@ -38,23 +38,26 @@ function chaining () {
     // selectInput.parentNode.appendChild(inputElement);
     // document.querySelector('#'+UUID).parentNode.appendChild(clone);
 }
+$ : {
+    selectedMod = modifiers.find(m => m.label === selected);
+}
 
 </script>
 
-<div id="{UUID}" bind:this={div} transition:fade={ {duration:300, easing: cubicIn} } class="relative mb-1 h-8">
+<div id="{modifierID}" transition:fade={ {duration:300, easing: cubicIn} } class="relative mb-1 h-8">
 
     <div class="flex flex-row">
         <select bind:value={selected} on:change={chaining} class="rounded-md mr-3 h-8">
             {#each modifiers as modifier}
-                <option value={modifier}>{modifier.label}</option>
+                <option value={modifier.label}>{modifier.label}</option>
             {/each}
         </select>
-        {#if selected && selected.input && selected.input == "text"}
-            <input type="text" size=12 class="border border-gray-300 rounded-md p-2 h-8 text-xs" placeholder="{selected.placeholder}"/>
-        {:else if selected.input == "select"}
-            <select class="border border-gray-300 rounded-md h-8">
-                {#each selected.options as option}
-                    <option value={option}>{option}</option>
+        {#if selected != null && selectedMod.input == "text"}
+            <input bind:value={value} type="text" size=12 class="border border-gray-300 rounded-md p-2 h-8 text-xs" placeholder="{selectedMod.placeholder}"/>
+        {:else if selected && selectedMod.input == "select"}
+            <select class="border border-gray-300 rounded-md h-8" bind:value={option}>
+                {#each selectedMod.options as opt}
+                    <option value={opt}>{opt}</option>
                 {/each}
             </select>
         {/if}

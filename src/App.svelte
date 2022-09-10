@@ -6,8 +6,7 @@ import YamlTool from './lib/components/YamlTool.svelte';
 import StoreAction from './lib/components/StoreAction.svelte';
 import { dump } from 'js-yaml';
 import { onMount } from 'svelte';
-import { afterUpdate } from 'svelte';
-import { makeUUID } from './lib/tools/toolbox';
+import { makeUUID, formatModifierString } from './lib/tools/toolbox';
 
 export let ModelName = '';
 
@@ -38,7 +37,12 @@ $: $YAML = dump($modelData);
 $: $modelData = { [ModelName]: {
   ...$columns.reduce( (acc, column) => {
     if(column.disabled) return acc;
-    let modifiersString = column.modifiers.map(c => c.label).join(' ');
+    let modifiersString = formatModifierString(column.modifiers);
+    // let extraModifiersString = column.extraModifiers.map(m => {
+    //   m.label
+    // }).join(' ');
+    
+    console.log(column.modifiers);
     let typeSize = column.type + (column.size ? `:${column.size}` : '');
     let precisionScale = '';
     if(column.precision && column.scale) {
@@ -90,7 +94,7 @@ $ : $resource.name = ModelName;
                 {#each $columns as column}
                 <ColumnInfo {...column} bind:name={column.name} bind:type={column.type} bind:size={column.size}
                             bind:precision={column.precision} bind:scale={column.scale} bind:modifiers={column.modifiers}
-                            bind:saved={column.saved} bind:disabled={column.disabled}/>
+                            bind:saved={column.saved} bind:disabled={column.disabled} bind:extraModifiers={columns.extraModifiers}/>
                 {/each}
               </div>
               <div on:click={addColumn} 

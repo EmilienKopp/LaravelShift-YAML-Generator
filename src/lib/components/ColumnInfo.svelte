@@ -1,6 +1,6 @@
 <svelte:options accessors={true}/>
 <script>
-import { CONFIG, attributePropertiesStore, columns, modelData, resource, DATA_TYPES, MODIFIERS, disabledColumns, YAML} from '../stores';
+import { CONFIG, attributePropertiesStore, columns, modelData, resource, DATA_TYPES, MODIFIERS, disabledColumns, YAML, } from '../stores';
 import {nanoid} from 'nanoid';
 import PropCheckbox from './PropCheckbox.svelte';
 import { createEventDispatcher } from 'svelte';
@@ -8,7 +8,7 @@ import { fly, fade } from 'svelte/transition';
 import { onMount, onDestroy } from 'svelte';
 import Tooltip from './Tooltip.svelte';
 import ModifierInput from './ModifierInput.svelte';
-import { makeUUID, arrayTransfer } from '../tools/toolbox';
+import { makeUUID } from '../tools/toolbox';
 import { dump } from 'js-yaml';
     
     export let UUID = null;
@@ -102,13 +102,20 @@ import { dump } from 'js-yaml';
                 modifiers = modifiers.filter(c => c.label !== event.detail.label);
         }
         console.log('attributePropertiesStore', $attributePropertiesStore);
-        console.log('modifiers', modifiers);
     }
 
     function showMoreProps() {
-        let newUUID = UUID+'_'+makeUUID();
-        extraModifiers = [...extraModifiers, newUUID];
-        console.log(extraModifiers);
+        let newID = makeUUID();
+        let newModifier = {
+            modifierID: newID,
+            columnUUID: UUID,
+            label: null,
+            type: null,
+            value: null,
+            option: null,
+        };
+        extraModifiers = [...extraModifiers, newModifier];
+        modifiers.push(newModifier);
     }
 
     function toggleDisabled() {
@@ -127,6 +134,13 @@ import { dump } from 'js-yaml';
         }
         $YAML = dump($modelData);
     }
+
+
+$ : console.log('extraModifiers',extraModifiers);
+$ : {
+    modifiers.concat(extraModifiers);
+}
+
 </script>
 
 <!-- DISABLE BUTTON -->
@@ -201,15 +215,18 @@ on:click={toggleDisabled}>
     <div class="col-span-7 col-start-1 grid grid-cols-7">
         {#if extraModifiers.length > 0 }
         <div id="extra-modifiers" class="col-span-6 grid grid-cols-7">
-            {#each extraModifiers as uuid}
-            <div class="col-start-1 items-center">
-                <Tooltip label="外す">
-                    <button on:click={() => { extraModifiers = extraModifiers.filter( m => m !== uuid) } }
-                            {disabled}
-                            class="menu-icon h-6 w-6 text-sm hover:bg-orange-500 bg-yellow-500 m-0 text-darkish"><i class="bi bi-x"></i></button>
-                </Tooltip>
-            </div>
-            <ModifierInput UUID={uuid} />
+            {#each extraModifiers as modifier}
+                <div class="col-start-1 items-center">
+                    <Tooltip label="外す">
+                        <button on:click={() => { extraModifiers = extraModifiers.filter( m => m.modifierID !== modifier.modifierID) } }
+                                {disabled}
+                                class="menu-icon h-6 w-6 text-sm hover:bg-orange-500 bg-yellow-500 m-0 text-darkish">
+                                <i class="bi bi-x"></i>
+                        </button>
+                    </Tooltip>
+                </div>
+                <ModifierInput  {...modifier} bind:selected={modifier.label} 
+                                bind:value={modifier.value} bind:option={modifier.option}/>
             {/each}
         </div>
         {/if}

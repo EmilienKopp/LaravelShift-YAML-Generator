@@ -8,6 +8,8 @@ export const disabledColumns = writable([]);
 
 export const columns = writable([]);
 
+export const modifiers = writable([]);
+
 export const menuRightmost = writable();
 
 export const resource = writable(new Resource());
@@ -36,6 +38,7 @@ export const CONFIG = readable( {
 
 export const DATA_TYPES = writable([
     {type:'int',common: true},
+    {type:'id',common:true},
     {type:'string',common: true, parameters: [ {name: 'size', input:'text'} ]},
     {type:'decimal',common: true, parameters: [ {name: 'precision', input:'text'}, {name: 'scale', input:'text'} ]},
     {type:'bigInt',common: true},
@@ -112,13 +115,13 @@ export const MODIFIERS = writable([
     {label:'unsigned', chain: ['from'] },
     {label:'after', input: 'text', placeholder: 'column name'},
     {label:'default', input:'text', placeholder: 'value'},
-    {label:'foreign', input:'text',placeholder: 'foreign key', chain: ['references','on']},
-    {label:'foreignId', input:'text', placeholder: 'foreign key', chain: ['constrained','onUpdate','onDelete']},
+    {label:'foreign', input:'text',placeholder: 'table.column'},
+    {label:'foreignId', input:'text', placeholder: 'table.column', chain: ['constrained','onUpdate','onDelete']},
     {label:'primary',input:'text', placeholder: 'primary key',chain:['autoIncrement']},
     {label:'index',input:'text', placeholder: 'index'},
     {label:'charset',input:'text', placeholder: 'charset'},
     {label:'collation',input:'text', placeholder: 'collation'},
     {label:'useCurrent'},
-    {label: 'from', input:'text', placeholder: 'starting value'},
-    {label: 'onDelete', input:'select', options:['cascade','restrict','set null','no action']},
+    // {label: 'from', input:'text', placeholder: 'starting value'},
+    // {label: 'onDelete', input:'select', options:['cascade','restrict','set null','no action']},
 ]);
