@@ -14,8 +14,6 @@ const flyOptions = { duration: 600, x: -400 , easing: quartInOut}
 
 let coord;
 
-console.log(window.screenX)
-
 function toggleModal(event) {
     showing = !showing;
     dispatch('toggle', {show: showing});

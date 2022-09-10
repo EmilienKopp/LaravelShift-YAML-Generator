@@ -31,7 +31,7 @@
         <button id={label+'-'+UUID} 
         class="{baseStyle} {checked ? checkedClass : uncheckedClass }"
         on:click|preventDefault={ checkAndDispatch }
-        on:mouseleave={ mouseLeaveHandler }>
+        on:mouseleave={ mouseLeaveHandler } {disabled}>
             <i class="bi bi-{icon}"></i>
         </button>
     </Tooltip>

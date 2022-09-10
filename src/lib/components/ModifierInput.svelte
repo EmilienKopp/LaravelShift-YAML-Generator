@@ -17,26 +17,26 @@ const dispatch = createEventDispatcher();
 const modifiers = $MODIFIERS.filter(m => !m.common);
 
 function chaining () {
-    console.log('chaining()');
-    if (!selected.chain) return;
-    dispatch('chaining', {UUID});
-    console.log(div);
-    let clone = div.cloneNode(true);
-    clone.id = makeUUID();
-    let chainOptions = selected.chain;
-    let selectInput = clone.querySelector('select');
-    let inputElement = clone.querySelector('input');
-    while (selectInput.firstChild) {
-        selectInput.removeChild(selectInput.firstChild);
-    }
-    chainOptions.forEach(option => {
-        let optionElement = document.createElement('option');
-        optionElement.value = option;
-        optionElement.innerText = option;
-        selectInput.appendChild(optionElement);
-    });
-    selectInput.parentNode.appendChild(inputElement);
-    document.querySelector('#'+UUID).parentNode.appendChild(clone);
+    // console.log('chaining()');
+    // if (!selected.chain) return;
+    // dispatch('chaining', {UUID});
+    // console.log(div);
+    // let clone = div.cloneNode(true);
+    // clone.id = makeUUID();
+    // let chainOptions = selected.chain;
+    // let selectInput = clone.querySelector('select');
+    // let inputElement = clone.querySelector('input');
+    // while (selectInput.firstChild) {
+    //     selectInput.removeChild(selectInput.firstChild);
+    // }
+    // chainOptions.forEach(option => {
+    //     let optionElement = document.createElement('option');
+    //     optionElement.value = option;
+    //     optionElement.innerText = option;
+    //     selectInput.appendChild(optionElement);
+    // });
+    // selectInput.parentNode.appendChild(inputElement);
+    // document.querySelector('#'+UUID).parentNode.appendChild(clone);
 }
 
 </script>
@@ -50,7 +50,7 @@ function chaining () {
             {/each}
         </select>
         {#if selected && selected.input && selected.input == "text"}
-            <input type="text" class="border border-gray-300 rounded-md p-2 h-8 text-xs" placeholder="{selected.placeholder}"/>
+            <input type="text" size=12 class="border border-gray-300 rounded-md p-2 h-8 text-xs" placeholder="{selected.placeholder}"/>
         {:else if selected.input == "select"}
             <select class="border border-gray-300 rounded-md h-8">
                 {#each selected.options as option}

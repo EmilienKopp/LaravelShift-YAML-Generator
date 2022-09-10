@@ -4,6 +4,8 @@ import ControllerActions from "./ControllerActions.js";
 
 export const modelData = writable({});
 
+export const disabledColumns = writable([]);
+
 export const columns = writable([]);
 
 export const menuRightmost = writable();
@@ -34,7 +36,7 @@ export const CONFIG = readable( {
 
 export const DATA_TYPES = writable([
     {type:'int',common: true},
-    {type:'string',common: true, parameters: [ {name: 'length', input:'text'} ]},
+    {type:'string',common: true, parameters: [ {name: 'size', input:'text'} ]},
     {type:'decimal',common: true, parameters: [ {name: 'precision', input:'text'}, {name: 'scale', input:'text'} ]},
     {type:'bigInt',common: true},
     {type:'float',common: true, parameters: [ {name: 'precision', input:'text'}, {name: 'scale', input:'text'} ]},

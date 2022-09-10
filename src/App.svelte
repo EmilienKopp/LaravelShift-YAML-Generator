@@ -11,81 +11,15 @@ import { makeUUID } from './lib/tools/toolbox';
 
 export let ModelName = '';
 
-let columnUUID, columnName, columnType, columnSize, columnModifiers;
-let saved = false;
-let first;
-let currentIndex = 0;
-
 onMount( () => {
-  modelData.set({ [ModelName]: {} });
-  YAML.set(dump($modelData));
+  $modelData ={ [ModelName]: {} };
+  $YAML = dump($modelData);
 })
 
-afterUpdate( () => {
-  updateResource();
-})
-
-function updateResource () {
-  let oldName = $resource.name;
-  let oldProps = $modelData[oldName];
-  $resource.name = ModelName;
-  modelData.set({
-    [ModelName] : {...oldProps}
-  });
-  YAML.set(dump($modelData));
-}
-
-function saveMenuWidth (event) {
-  $menuRightmost = event.currentTarget.getBoundingClientRect().right;
-}
-
-
-// clone the modelProp component and add it to the receiver below
-function appendNew() {
-
-  //TODO: Fix the bug where the new component is not added to the modelData
-  // let clone = new ModelProp({
-  //   props: {
-  //     UUID: columnUUID,
-  //     name: null,
-  //     type: null,
-  //     size: null,
-  //     modifiers: [],
-  //   },
-  //   target: document.querySelector('#list'),
-  //   intro: true,
-  // });
-
-  // /** add the clone to an array for backup **/
-  // modelProxies.set([...$modelProxies, clone]);
-  // console.log(clone.UUID,'added to', $modelProxies);
-  // $modelProxies[currentIndex].saved = true;
-  // $modelProxies.forEach( component => {
-  //   component.$on('remove', () => {
-  //     console.warn('remove event received by cloned ModelProp');
-  //     $modelProxies[currentIndex].$destroy();
-  //     $modelProxies = $modelProxies.filter( c => c.UUID !== component.UUID);
-  //   });
-  //   component.$on('destroyed', () => {
-  //     console.warn('data destroyed');
-  //     updateResource();
-  //   });
-  // })
-  // currentIndex++;
-
-  // updateResource();
-
-  // let modifiersString = columnModifiers.map(c => c.label).join(' ');
-  // console.log('modifiersString: ', modifiersString);
-  // let typeSize = columnType + (columnSize ? `:${columnSize}` : '');
-  // $modelData[ModelName] = {...$modelData[ModelName], [columnName] : `${typeSize} ${modifiersString}`};
-  // YAML.set(dump($modelData));
-  // console.log('yaml:',$YAML);
-}
 
 function addColumn(){
   let newUUID = makeUUID();
-  $columns = [...$columns, {
+  let newColumn = {
     UUID: newUUID,
     name: null,
     type: null,
@@ -93,15 +27,30 @@ function addColumn(){
     precision: null,
     scale: null,
     modifiers: [],
-    saved: false,
-  }];
-  console.log($columns);
-  updateResource();
+    saved: new Date(),
+    disabled: false,
+  }
+  columns.set([...$columns, newColumn]);
 }
 
-function remove() {
-  $columns = $columns.filter( c => c !== columnUUID);
-}
+
+$: $YAML = dump($modelData);
+$: $modelData = { [ModelName]: {
+  ...$columns.reduce( (acc, column) => {
+    if(column.disabled) return acc;
+    let modifiersString = column.modifiers.map(c => c.label).join(' ');
+    let typeSize = column.type + (column.size ? `:${column.size}` : '');
+    let precisionScale = '';
+    if(column.precision && column.scale) {
+      precisionScale += `(${column.precision},${column.scale})`;
+    } else if(column.precision) {
+      precisionScale += `(${column.precision})`;
+    }
+    return {...acc, [column.name] : `${typeSize} ${precisionScale} ${modifiersString}`};
+  }, {})
+}};
+
+$ : $resource.name = ModelName;
 
 </script>
 
@@ -111,8 +60,7 @@ function remove() {
 
     <!-- /** SIDEBAR **/-->
     <div  id="sidebar" class="flex flex-col w-18 justify-between overflow-y-hidden p-2 max-w-fit border-r border-darkish" 
-          style="height:100vh;"
-          on:mouseenter="{saveMenuWidth}">
+          style="height:100vh;">
       <YamlTool/>
     </div>
 
@@ -125,8 +73,7 @@ function remove() {
           BlueprintFactory
         </div>
         <input type="text" class="mx-4 p-2 rounded-sm text-darkish" id="resource-name-input" placeholder="モデル名を入力" 
-          bind:value="{ModelName}"
-          on:input="{updateResource}"/>
+          bind:value="{ModelName}"/>
       </div>
 
       <!-- /** MAIN (INNER) **/-->
@@ -141,9 +88,9 @@ function remove() {
             <div id="attributes" class="h-full w-96">
               <div id="list" class="px-1">
                 {#each $columns as column}
-                <ColumnInfo on:remove(remove) {...column} bind:name={column.name} bind:type={column.type} bind:size={column.size}
+                <ColumnInfo {...column} bind:name={column.name} bind:type={column.type} bind:size={column.size}
                             bind:precision={column.precision} bind:scale={column.scale} bind:modifiers={column.modifiers}
-                            bind:saved={column.saved} />
+                            bind:saved={column.saved} bind:disabled={column.disabled}/>
                 {/each}
               </div>
               <div on:click={addColumn} 

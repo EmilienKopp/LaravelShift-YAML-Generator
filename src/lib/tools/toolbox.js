@@ -7,3 +7,14 @@ export function makeUUID (size = 6, replacePairs = [[]], prefix = '', suffix = '
     });
     return prefix + id + suffix;
 }
+
+export function arrayTransfer( uuid, from, to) {
+    let transferElement = from.find(element => element.UUID == uuid);
+    if (transferElement) {
+        console.log('transferElement', transferElement);
+        from = from.filter(element => element.UUID !== uuid);
+        to = [...to, transferElement];
+    }
+    console.log('from', from);
+    console.log('to', to);
+}
