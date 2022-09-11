@@ -20,6 +20,7 @@
     "vite": "^3.0.7"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.0.0-rc.10",
     "bootstrap-icons": "^1.9.1",
     "js-yaml": "^4.1.0",
     "nano": "^10.0.0"
