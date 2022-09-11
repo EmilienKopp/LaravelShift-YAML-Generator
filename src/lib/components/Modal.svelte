@@ -49,7 +49,7 @@ function dragendHandler(event) {
         class="modal-btn-right text-black">
             <i class="bi bi-x"></i>
         </button>
-        <h5>{title}</h5>
+        <h2 class="font-bold text-green-400 text-xl text-center">{title}</h2>
 
         <slot></slot>
 

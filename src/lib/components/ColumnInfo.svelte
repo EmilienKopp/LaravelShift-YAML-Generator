@@ -135,11 +135,11 @@ import { dump } from 'js-yaml';
 </script>
 
 <!-- DISABLE BUTTON -->
-<div transition:fade={ {delay:500, duration:500} } class="z-50 relative top-3 flex justify-end">
-<button class="{disabled ? 'bg-lime-600' : 'bg-yellow-300'}  text-black rounded-3xl h-6 w-6" 
-on:click={toggleDisabled}>
-    <i class="bi bi-eye{disabled ? '' : '-slash'}-fill"></i>
-</button>
+<div transition:fade={ {delay:500, duration:500} } class="z-30 relative top-3 flex justify-end">
+    <button class="{disabled ? 'bg-lime-600' : 'bg-yellow-300'}  text-black rounded-3xl h-6 w-6" 
+    on:click={toggleDisabled}>
+        <i class="bi bi-eye{disabled ? '' : '-slash'}-fill"></i>
+    </button>
 </div>
 
 <!-- CHECK MARK -->

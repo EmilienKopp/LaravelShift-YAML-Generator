@@ -3,6 +3,7 @@ import { resource, columns, YAML, modelData } from './lib/stores';
 import ColumnInfo from './lib/components/ColumnInfo.svelte';
 import IndexAction from './lib/components/IndexAction.svelte';
 import YamlTool from './lib/components/YamlTool.svelte';
+import HelpTool from './lib/components/HelpTool.svelte';
 import StoreAction from './lib/components/StoreAction.svelte';
 import { dump } from 'js-yaml';
 import { onMount } from 'svelte';
@@ -69,6 +70,7 @@ $ : relationships = $resource.serializeRelationships();
     <div  id="sidebar" class="flex flex-col w-18 justify-between overflow-y-hidden p-2 max-w-fit border-r border-darkish" 
           style="height:100vh;">
       <YamlTool/>
+      <HelpTool/>
     </div>
 
     <!-- /** MAIN (OUTER) **/-->
