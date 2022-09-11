@@ -108,9 +108,7 @@ $ : ModelName = $resource.name ? $resource.name : '';
             </div>
             </div>
 
-            {#if demo}
-            <DemoHowTo bind:ModelName={ModelName}/>
-            {/if}
+            <slot name="HowTo"></slot>
         </div>
         
     </main>
