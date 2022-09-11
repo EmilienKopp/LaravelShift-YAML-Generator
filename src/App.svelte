@@ -7,8 +7,11 @@ import StoreAction from './lib/components/StoreAction.svelte';
 import { dump } from 'js-yaml';
 import { onMount } from 'svelte';
 import { makeUUID, formatModifierString } from './lib/tools/toolbox';
+import RelationshipTool from './lib/components/RelationshipTool.svelte';
+import RelationshipTable from './lib/components/RelationshipTable.svelte';
 
 export let ModelName = '';
+let relationships;
 
 onMount( () => {
   $modelData ={ [ModelName]: {} };
@@ -47,11 +50,14 @@ $: $modelData = { [ModelName]: {
     } else if(column.precision) {
       precisionScale += `(${column.precision})`;
     }
-    return {...acc, [column.name] : `${typeSize}${precisionScale} ${modifiersString}`};
-  }, {})
+
+    return {...acc, [column.name] : `${typeSize}${precisionScale} ${modifiersString}`.trim()};
+  }, {}),
+  relationships,
 }};
 
 $ : $resource.name = ModelName;
+$ : relationships = $resource.serializeRelationships();
 
 </script>
 
@@ -81,12 +87,17 @@ $ : $resource.name = ModelName;
       <main class="flex-1 overflow-y-auto"  style="max-height: 100vh;">
 
         <!-- /** APP CONTENT (GRID) **/-->
-        <div id="content" class="flex flex-row gap-4 top-16 left-0 py-4 pl-52 w-full">
+        <div id="content" class="flex flex-row gap-4 top-16 left-0 py-8 pl-52 w-full">
           
           <!-- /** WRAPPER FOR MODEL ATTRIBUTES **/-->
           <div id="model-wrapper" class="border-2 border-darkish rounded-lg h-5/6 max-w-fit p-2">
-            <h6>Model:</h6>
-            <button class="menu-icon">Relationships</button>
+            <div class="grid grid-cols-2">
+              <h6>Model:</h6>
+              <div class="place-self-end">
+                <RelationshipTool />
+              </div>
+                <RelationshipTable/>
+            </div>
             <div id="attributes" class="h-full w-96">
               <div id="list" class="px-1">
                 {#each $columns as column}

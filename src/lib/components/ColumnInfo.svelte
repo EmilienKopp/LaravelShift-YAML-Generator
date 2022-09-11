@@ -211,7 +211,7 @@ on:click={toggleDisabled}>
                     <Tooltip label="外す">
                         <button on:click={() => { extraModifiers = extraModifiers.filter( m => m.modifierID !== modifier.modifierID) } }
                                 {disabled} transition:fade
-                                class="menu-icon h-7 w-7 p-1 text-sm hover:bg-orange-500 bg-yellow-500 m-0 text-darkish">
+                                class="menu-icon bg-yellow-300 h-7 w-7 p-1 text-sm  m-0 text-darkish">
                                 <i class="bi bi-backspace-fill"></i>
                         </button>
                     </Tooltip>

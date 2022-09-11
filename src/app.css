@@ -41,6 +41,10 @@
     @apply border-2 border-slate-700 border-dashed
   }
 
+  input {
+    @apply rounded-md text-darkish p-1 focus:border-2 focus:border-lime-200
+  }
+
 }
 
 

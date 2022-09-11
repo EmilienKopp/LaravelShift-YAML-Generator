@@ -1,7 +1,8 @@
 import { attributePropertiesStore } from "./stores";
 export default class Resource {
-    mode;
+    model;
     controllerActions;
+    relationships;
 
     constructor() {
         this.name = '';
@@ -11,6 +12,23 @@ export default class Resource {
         this.controllerActions = [];
         this.views = [];
         this.customRequest = undefined;
+        this.relationships = [
+            {name:"hasMany", value: null},
+            {name:"hasOne", value: null},
+            {name: "belongsTo",value: null},
+            {name: "belongsToMany", value: null}
+        ];
+    }
+
+    serializeRelationships() {
+        let activeRelationships = this.relationships.filter( r => r.value !== null);
+        let hasNoActive = (activeRelationships == null || !activeRelationships.find(r => r.value));
+        if (hasNoActive) return;
+        let relationshipsObject = {};
+        activeRelationships.forEach( r => {
+            relationshipsObject[r.name] = r.value;
+        });
+        if(relationshipsObject) return relationshipsObject;
     }
 
     setName(n) {
