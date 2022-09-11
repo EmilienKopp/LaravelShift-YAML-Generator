@@ -19,10 +19,10 @@
     </div>
     <div id="howto-footer" class="flex flex-row justify-start items-center">
         <p>Developed with:</p>
-            <a href="https://svelte.dev">
+            <a href="https://svelte.dev" target="_blank">
                 <img width=100 alt="Svelte" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/svelte/svelte-original-wordmark.svg" />
             </a>
-            <a href="https://tailwindcss.com/">
+            <a href="https://tailwindcss.com/" target="_blank">
                 <img width=100 alt="Tailwindcss" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original-wordmark.svg" />
             </a>
     </div>

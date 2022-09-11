@@ -27,7 +27,7 @@ const downloadYaml = () => {
                 --></code><!--
                 --></pre>
 
-                <MenuButton on:click={downloadYaml} animated={true} ><i class="bi bi-cloud-arrow-down"></i></MenuButton>
+                <MenuButton on:click={downloadYaml} ><i class="bi bi-cloud-arrow-down"></i></MenuButton>
                 
         </Modal>
 </div>

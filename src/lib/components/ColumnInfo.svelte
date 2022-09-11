@@ -174,7 +174,7 @@ import { dump } from 'js-yaml';
     {#if type  && $DATA_TYPES.find(dt => dt.type == type).parameters !== undefined } 
         {#each $DATA_TYPES.find(dt => dt.type == type).parameters as parameter, index}
             <input type="text" size="4" name="{parameter.name}"
-            class=" rounded-sm p-1 text-xs" placeholder="{parameter.name}"
+            class="rounded-sm p-1 text-xs" placeholder="{parameter.name}"
             bind:this={refs[index]} on:change={updateSelf} {disabled}/>
         {/each}
     {/if}

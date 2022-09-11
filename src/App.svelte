@@ -1,35 +1,58 @@
 <script>
+import { supabase } from './API/SupabaseClients';
+import { onMount } from 'svelte';
 import { ENV } from './lib/env';
 import Dashboard from "./lib/pages/Dashboard.svelte";
 import Auth from "./lib/auth/Auth.svelte";
-import Login from "./lib/auth/Login.svelte";
+import LogInOut from "./lib/components/LogInOut.svelte";
 import Sidebar from "./lib/blocks/Sidebar.svelte";
-import Header from "./lib/blocks/Header.svelte";
 import YamlTool from "./lib/components/YamlTool.svelte";
 import HelpTool from "./lib/components/HelpTool.svelte";
-import HowTo from "./lib/components/HowTo.svelte";
+import { USER, SESSION } from './lib/users';
 
+let session;
 
-let user = {};
+onMount( () =>{
+  supabase.auth.getSession().then( ({data}) => {
+    session = data.session;
+  });
+
+  supabase.auth.onAuthStateChange( (_event, _session) => {
+    session = _session;
+  });
+
+});
+
+const logOut = async () => {
+  console.log('Received SignOut event');
+  const { error } = await supabase.auth.signOut();
+  console.log(error);
+}
+
 
 console.log('ENV', { ...$ENV });
+console.log(session);
 </script>
 
 
 <div class="flex h-full flex-col" >
     <div class="flex h-full">
     
-    <Sidebar>
-        <YamlTool slot="YamlTool"/>
-        <HelpTool slot="HelpTool"/>
-    </Sidebar>
 
-    <Dashboard>
-      <Header slot="header"/>
-      {#if $ENV.PROD && $ENV.DEMO}
-      <HowTo slot="HowTo"/>
-      {/if}
-    </Dashboard>
+      <Sidebar>
+        {#if session}
+          <YamlTool slot="YamlTool"/>
+          <HelpTool slot="HelpTool"/>
+        {/if}
+          <LogInOut slot="LogInOut" on:signOut={logOut}/>
+      </Sidebar>
+
+      
+        {#if ! session}
+          <Auth/>
+        {:else}
+          <Dashboard {session}/>
+        {/if}
 
     </div>
 </div>
