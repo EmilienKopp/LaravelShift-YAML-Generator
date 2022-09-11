@@ -1,7 +1,6 @@
 <script>
 import { fly,fade } from 'svelte/transition';
 import { getRelativeXY, adjustPosition } from '../tools/dragging';
-import { menuRightmost } from '../stores';
 import { createEventDispatcher } from 'svelte';
 import { quartInOut } from 'svelte/easing';
 
@@ -9,12 +8,11 @@ export let showing;
 export let title;
 
 const dispatch = createEventDispatcher();
-const OFFSET = 20;
 const flyOptions = { duration: 600, x: -400 , easing: quartInOut}
 
 let coord;
 
-function toggleModal(event) {
+function toggleModal() {
     showing = !showing;
     dispatch('toggle', {show: showing});
     if(showing) {
@@ -36,8 +34,7 @@ function dragendHandler(event) {
 
 {#if showing}
     <div id='modal-{title}'
-        style="{"left:" + ($menuRightmost + OFFSET) + "px"}"
-        class="absolute top-12 left-8 p-4 cursor-pointer z-50 rounded-lg bg-darkish text-white"
+        class="absolute top-15 left-20 p-4 cursor-pointer z-50 rounded-lg bg-darkish text-white"
         draggable="{showing}"
         transition:fly={ flyOptions }  
         on:dragend="{dragendHandler}"

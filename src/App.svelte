@@ -1,5 +1,5 @@
 <script>
-import { resource, menuRightmost, columns, YAML, modelData } from './lib/stores';
+import { resource, columns, YAML, modelData } from './lib/stores';
 import ColumnInfo from './lib/components/ColumnInfo.svelte';
 import IndexAction from './lib/components/IndexAction.svelte';
 import YamlTool from './lib/components/YamlTool.svelte';
@@ -38,11 +38,8 @@ $: $modelData = { [ModelName]: {
   ...$columns.reduce( (acc, column) => {
     if(column.disabled) return acc;
     let modifiersString = formatModifierString(column.modifiers);
-    // let extraModifiersString = column.extraModifiers.map(m => {
-    //   m.label
-    // }).join(' ');
     
-    console.log(column.modifiers);
+    modifiersString += column.extraModifiers ? ' '+formatModifierString(column.extraModifiers) : '';
     let typeSize = column.type + (column.size ? `:${column.size}` : '');
     let precisionScale = '';
     if(column.precision && column.scale) {
@@ -50,7 +47,7 @@ $: $modelData = { [ModelName]: {
     } else if(column.precision) {
       precisionScale += `(${column.precision})`;
     }
-    return {...acc, [column.name] : `${typeSize} ${precisionScale} ${modifiersString}`};
+    return {...acc, [column.name] : `${typeSize}${precisionScale} ${modifiersString}`};
   }, {})
 }};
 
@@ -89,12 +86,13 @@ $ : $resource.name = ModelName;
           <!-- /** WRAPPER FOR MODEL ATTRIBUTES **/-->
           <div id="model-wrapper" class="border-2 border-darkish rounded-lg h-5/6 max-w-fit p-2">
             <h6>Model:</h6>
+            <button class="menu-icon">Relationships</button>
             <div id="attributes" class="h-full w-96">
               <div id="list" class="px-1">
                 {#each $columns as column}
                 <ColumnInfo {...column} bind:name={column.name} bind:type={column.type} bind:size={column.size}
                             bind:precision={column.precision} bind:scale={column.scale} bind:modifiers={column.modifiers}
-                            bind:saved={column.saved} bind:disabled={column.disabled} bind:extraModifiers={columns.extraModifiers}/>
+                            bind:saved={column.saved} bind:disabled={column.disabled} bind:extraModifiers={column.extraModifiers}/>
                 {/each}
               </div>
               <div on:click={addColumn} 

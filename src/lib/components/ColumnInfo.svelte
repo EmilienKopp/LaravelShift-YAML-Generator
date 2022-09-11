@@ -101,7 +101,6 @@ import { dump } from 'js-yaml';
                 attributePropertiesStore.set($attributePropertiesStore.filter(c => c.label !== event.detail.label));
                 modifiers = modifiers.filter(c => c.label !== event.detail.label);
         }
-        console.log('attributePropertiesStore', $attributePropertiesStore);
     }
 
     function showMoreProps() {
@@ -115,7 +114,6 @@ import { dump } from 'js-yaml';
             option: null,
         };
         extraModifiers = [...extraModifiers, newModifier];
-        modifiers.push(newModifier);
     }
 
     function toggleDisabled() {
@@ -134,13 +132,6 @@ import { dump } from 'js-yaml';
         }
         $YAML = dump($modelData);
     }
-
-
-$ : console.log('extraModifiers',extraModifiers);
-$ : {
-    modifiers.concat(extraModifiers);
-}
-
 </script>
 
 <!-- DISABLE BUTTON -->
@@ -219,9 +210,9 @@ on:click={toggleDisabled}>
                 <div class="col-start-1 items-center">
                     <Tooltip label="外す">
                         <button on:click={() => { extraModifiers = extraModifiers.filter( m => m.modifierID !== modifier.modifierID) } }
-                                {disabled}
-                                class="menu-icon h-6 w-6 text-sm hover:bg-orange-500 bg-yellow-500 m-0 text-darkish">
-                                <i class="bi bi-x"></i>
+                                {disabled} transition:fade
+                                class="menu-icon h-7 w-7 p-1 text-sm hover:bg-orange-500 bg-yellow-500 m-0 text-darkish">
+                                <i class="bi bi-backspace-fill"></i>
                         </button>
                     </Tooltip>
                 </div>

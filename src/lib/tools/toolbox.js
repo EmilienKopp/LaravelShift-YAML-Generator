@@ -9,13 +9,7 @@ export function makeUUID (size = 6, replacePairs = [[]], prefix = '', suffix = '
 }
 
 export function formatModifierString (modifiersArray) {
-    let str = '';
-    modifiersArray.forEach( modifier => {
-        str += modifier.label;
-        if ( modifier.value || modifier.option) {
-            str += ':' + (modifier.value || modifier.option);
-        }
-        str += ' ';
-    });
-    return str;
+    return modifiersArray.map( modifier => 
+        modifier.label + (modifier.value || modifier.option ? ':' + `${modifier.value || modifier.option}` : '')
+    ).join(' ');
 }
