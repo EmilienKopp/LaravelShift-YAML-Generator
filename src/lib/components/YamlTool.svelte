@@ -21,13 +21,13 @@ const downloadYaml = () => {
                 title="YAML" 
                 on:toggle={ () => {showing = ! showing}}>
 
-                <pre class="bg-slate-800 text-white text-left p-3"><!--
+                <pre class="bg-slate-800 text-white text-left p-3 mb-5"><!--
                 --><code><!--
                 -->{$YAML}<!--
                 --></code><!--
                 --></pre>
 
-                <MenuButton on:click={downloadYaml}><i class="bi bi-cloud-arrow-down"></i></MenuButton>
+                <MenuButton on:click={downloadYaml} animated={true} ><i class="bi bi-cloud-arrow-down"></i></MenuButton>
                 
         </Modal>
 </div>

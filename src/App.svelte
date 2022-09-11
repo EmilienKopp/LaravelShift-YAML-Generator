@@ -10,8 +10,10 @@ import { onMount } from 'svelte';
 import { makeUUID, formatModifierString } from './lib/tools/toolbox';
 import RelationshipTool from './lib/components/RelationshipTool.svelte';
 import RelationshipTable from './lib/components/RelationshipTable.svelte';
+import DemoHowTo from './lib/components/DemoHowTo.svelte';
 
-export let ModelName = '';
+let ModelName = '';
+let demo = true;
 let relationships;
 
 onMount( () => {
@@ -81,7 +83,7 @@ $ : relationships = $resource.serializeRelationships();
         <div class="-ml-2 flex items-center text-sm">
           BlueprintFactory
         </div>
-        <input bind:value="{ModelName}" name="ModelName" class="p-2 w-60 h-9 bg-black border-darkish border-2 text-slate-400" placeholder="Type your model name here"/>
+        <input bind:value="{ModelName}" name="ModelName" class="animate-pulse p-2 w-60 h-9 bg-black border-darkish border-2 text-slate-400" placeholder="Type your model name here"/>
         <!-- <input type="text" class="mx-4 p-2 rounded-sm text-darkish" id="resource-name-input" placeholder="モデル名を入力" 
           bind:value="{ModelName}"/> -->
       </div>
@@ -124,7 +126,10 @@ $ : relationships = $resource.serializeRelationships();
               <StoreAction/>
             </div>
           </div>
-  
+
+          {#if demo}
+            <DemoHowTo bind:ModelName={ModelName}/>
+          {/if}
         </div>
       </main>
     </main>
