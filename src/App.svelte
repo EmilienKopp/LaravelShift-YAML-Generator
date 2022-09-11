@@ -81,8 +81,9 @@ $ : relationships = $resource.serializeRelationships();
         <div class="-ml-2 flex items-center text-sm">
           BlueprintFactory
         </div>
-        <input type="text" class="mx-4 p-2 rounded-sm text-darkish" id="resource-name-input" placeholder="モデル名を入力" 
-          bind:value="{ModelName}"/>
+        <div contenteditable="true" bind:textContent="{ModelName}">モデル名を入力</div>
+        <!-- <input type="text" class="mx-4 p-2 rounded-sm text-darkish" id="resource-name-input" placeholder="モデル名を入力" 
+          bind:value="{ModelName}"/> -->
       </div>
 
       <!-- /** MAIN (INNER) **/-->
