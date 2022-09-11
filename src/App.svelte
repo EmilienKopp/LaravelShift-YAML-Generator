@@ -117,7 +117,7 @@ $ : relationships = $resource.serializeRelationships();
           </div>
 
           <!-- /** WRAPPER FOR CONTROLLER ACTIONS **/-->
-          <div id="controller-wrapper" class="border-2 border-darkish p-2 rounded-md self-start">
+          <div id="controller-wrapper" class="hidden border-2 border-darkish p-2 rounded-md self-start">
             <h6>Controllers:</h6>
             <div id="controllers" class="flex flex-row gap-4">
               <IndexAction/>
