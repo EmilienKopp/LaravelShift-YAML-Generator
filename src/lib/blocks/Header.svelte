@@ -15,7 +15,7 @@ $ : $resource.name = ModelName;
     <div class="-ml-2 flex items-center text-sm">
         Welcome to
         <span class="font-bold text-blue-500 mx-3">BlueprintFactory</span>,
-        {$USER.username}
+        {guest ? 'Guest' : $USER.username}
         <span class="mr-4 ml-1 place-self-end text-xs text-slate-400">v0.1.0</span>
         <input bind:value="{ModelName}" on:change={ () => { console.log($resource)} }  name="ModelName" class="animate-pulse p-2 w-60 h-9 bg-black border-darkish border-2 text-slate-400" placeholder="Type your model name here"/>
     </div>

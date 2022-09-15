@@ -17,7 +17,7 @@ let website = null;
 
 
 onMount( () => {
-    getProfile();
+    //getProfile();
 })
 
 const getProfile = async () => {

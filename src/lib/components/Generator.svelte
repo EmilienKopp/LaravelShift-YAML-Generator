@@ -2,19 +2,19 @@
 import { dump } from 'js-yaml';
 import { onMount } from 'svelte';
 import { supabase } from '../../API/SupabaseClients';
-import { resource, columns, YAML, modelData } from '../stores';
+import { resource, columns, YAML, modelData, controllersData, COMMON_ACTIONS } from '../stores';
 import { makeUUID, formatModifierString } from '../tools/toolbox';
 import ColumnInfo from '../components/ColumnInfo.svelte';
-import IndexAction from '../components/IndexAction.svelte';
-import StoreAction from '../components/StoreAction.svelte';
 import RelationshipTool from '../components/RelationshipTool.svelte';
 import RelationshipTable from '../components/RelationshipTable.svelte';
+import ControllerAction from './ControllerAction.svelte';
+import Checkbox from './Checkbox.svelte';
 
 export let session;
 
 let ModelName = '';
 let relationships;
-
+let isResourceController = false;
 
 
 onMount( () => {
@@ -40,24 +40,36 @@ function addColumn(){
 
 
 $: $YAML = dump($modelData);
-$: $modelData = { [ModelName]: {
-    ...$columns.reduce( (acc, column) => {
-    if(column.disabled) return acc;
-    let modifiersString = formatModifierString(column.modifiers);
-    
-    modifiersString += column.extraModifiers ? ' '+formatModifierString(column.extraModifiers) : '';
-    let typeSize = column.type + (column.size ? `:${column.size}` : '');
-    let precisionScale = '';
-    if(column.precision && column.scale) {
-        precisionScale += `(${column.precision},${column.scale})`;
-    } else if(column.precision) {
-        precisionScale += `(${column.precision})`;
-    }
+$: $modelData = { 
+    models: {
+        [ModelName]: {
+        ...$columns.reduce( (acc, column) => {
+        if(column.disabled) return acc;
+        let modifiersString = formatModifierString(column.modifiers);
+        
+        modifiersString += column.extraModifiers ? ' '+formatModifierString(column.extraModifiers) : '';
+        let typeSize = column.type + (column.size ? `:${column.size}` : '');
+        let precisionScale = '';
+        if(column.precision && column.scale) {
+            precisionScale += `(${column.precision},${column.scale})`;
+        } else if(column.precision) {
+            precisionScale += `(${column.precision})`;
+        }
 
-    return {...acc, [column.name] : `${typeSize}${precisionScale} ${modifiersString}`.trim()};
-    }, {}),
-    relationships,
-}};
+        return {...acc, [column.name] : `${typeSize}${precisionScale} ${modifiersString}`.trim()};
+        }, {}),
+        relationships,
+        }
+    }
+};
+
+$: $controllersData = {
+    controllers: {
+        [ModelName]: {
+
+        }
+    }
+}
 
 $ : relationships = $resource.serializeRelationships();
 $ : ModelName = $resource.name ? $resource.name : '';
@@ -98,12 +110,20 @@ $ : ModelName = $resource.name ? $resource.name : '';
         </div>
 
         <!-- /** WRAPPER FOR CONTROLLER ACTIONS **/-->
-        <div id="controller-wrapper" class="hidden border-2 border-darkish p-2 rounded-md self-start">
+        <div id="controller-wrapper" class="border-2 border-darkish p-2 rounded-md self-start">
         <h6>Controllers:</h6>
-        <div id="controllers" class="flex flex-row gap-4">
-            <IndexAction/>
-            <StoreAction/>
-        </div>
+            <Checkbox name="resource-controller" bind:checked={isResourceController} label="Resource" />
+            {#if !isResourceController}
+            <div id="controllers" class="flex flex-col gap-4">
+                {#each $COMMON_ACTIONS as action}
+                <ControllerAction {action}/>
+                {/each}
+            </div>
+            {:else}
+            <div>
+                このコントローラーは「リソースコントローラー」として設定され、index, create, store, show, edit, update, and destroy が自動的に作成されます。
+            </div>
+            {/if}
         </div>
 
         <slot name="HowTo"></slot>

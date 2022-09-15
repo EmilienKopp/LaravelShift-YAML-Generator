@@ -2,7 +2,9 @@ import { attributePropertiesStore } from "./stores";
 export default class Resource {
     model;
     controllerActions;
+
     relationships;
+    hasResourceShorthand = false;
 
     constructor() {
         this.name = '';
@@ -18,6 +20,7 @@ export default class Resource {
             {name: "belongsTo",value: null},
             {name: "belongsToMany", value: null}
         ];
+
     }
 
     serializeRelationships() {

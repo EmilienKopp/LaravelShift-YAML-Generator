@@ -4,11 +4,17 @@ import ControllerActions from "./ControllerActions.js";
 
 export const modelData = writable({});
 
+export const controllersData = writable ({});
+
 export const disabledColumns = writable([]);
 
 export const columns = writable([]);
 
+export const actions = writable([]);
+
 export const modifiers = writable([]);
+
+export const statements = writable([]);
 
 export const menuRightmost = writable();
 
@@ -124,4 +130,40 @@ export const MODIFIERS = writable([
     {label:'useCurrent'},
     // {label: 'from', input:'text', placeholder: 'starting value'},
     // {label: 'onDelete', input:'select', options:['cascade','restrict','set null','no action']},
+]);
+
+export const STATEMENTS = writable([
+        { name:'query',params:['type'],options:['where','limit','order'] },
+        { name:'save',params:['model']},
+        { name:'delete',params:['model']},
+        { name:'dispatch',params:['object'],options:['with']},
+        { name:'find',params:['reference']},
+        { name:'fire',params:['object'],options:['with']},
+        { name:'flash',params:['reference']},
+        { name:'notify',params:['reference','target'], options: ['with']},
+        { name:'redirect',params:['reference'],options:['with']},
+        { name:'render',params:['reference'], options:['with']},
+        { name:'resource',params:['model'], options:['collection','paginate']},
+        { name:'respond',params:['reference'], options:['with']},
+        { name:'send',params:['object'], options:['to','with']},
+        { name:'store',params:['reference']},
+        { name:'update',params:['model']},
+        { name:'validate',params:['model']},
+    ]);
+
+export const QUERY_TYPES = writable([
+    'all',
+    'get',
+    'pluck',
+    'count',
+]);
+
+export const COMMON_ACTIONS = writable([
+    {name:'index', commonStatements:['query','render']},
+    {name:'store', commonStatements:['validate','save','flash','redirect']},
+    {name:'update', commonStatements:['validate','update','flash','redirect']},
+    {name:'destroy', commonStatements:['delete','redirect']},
+    {name:'show', commonStatements:['render']},
+    {name:'create', commonStatements:['render']},
+    {edit:'edit', commonStatements:['render']}
 ]);

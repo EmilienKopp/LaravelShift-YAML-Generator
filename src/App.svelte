@@ -40,19 +40,15 @@ console.log(session);
     
 
       <Sidebar>
-        {#if session}
           <YamlTool slot="YamlTool"/>
           <HelpTool slot="HelpTool"/>
-        {/if}
-          <LogInOut slot="LogInOut" on:signOut={logOut}/>
+          <!-- <LogInOut slot="LogInOut" on:signOut={logOut}/> -->
       </Sidebar>
 
       
-        {#if ! session}
-          <Auth/>
-        {:else}
+          <!-- <Auth/> -->
+
           <Dashboard {session}/>
-        {/if}
 
     </div>
 </div>
